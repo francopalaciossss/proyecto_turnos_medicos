@@ -57,6 +57,27 @@ Consultar turno / Solicitar turno
  2.  Mas facilidad para crear y pedir tunos.
  3. Tener mas orden de los pacientes y sus turnos.
  4. Los pacientes tienen mas informacion de sus medicos a mano.
+
+## 📸 Capturas de pantalla
+
+### Pantalla de Login
+![Login](screenshots/login.png)
+
+### Registro de Usuario
+![Registro](screenshots/registro.png)
+
+### Panel de Medico
+![Panel](screenshots/pantalla_medico.png)
+
+### Panel paciente
+![Turnos](screenshots/pantalla_paciente.png)
+
+### Panel Administrador
+![Turnos](screenshots/pantalla_admin.png)
+
+### Panel Horarios desde Administrador
+![Turnos](screenshots/pantalla_admin_asignar_turno.png)
+
 ## Autor
  Franco Nicolas Palacios
  
