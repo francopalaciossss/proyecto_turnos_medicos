@@ -63,6 +63,4 @@ Consultar turno / Solicitar turno
 - Sofia Gomez
 - Franco Nicolas Placios
 - Alejandro Yanez Vazquez
-- Esteban Iwanczuk
 - Milena Avila
-- Benicio Gallego Cano
