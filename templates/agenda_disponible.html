@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agenda disponible - TurnoMed</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="sidebar-logo-box">
+            <img src="{{ url_for('static', filename='imagenes/logo.png') }}" alt="TurnoMed">
+        </div>
+
+        <nav class="menu">
+            <a href="/admin">🏠 Panel</a>
+            <a href="/admin/medicos">👨‍⚕️ Administrar médicos</a>
+            <a href="/admin/pacientes">👤 Administrar pacientes</a>
+            <a href="/admin/agenda_disponible" class="active">🕒 Agenda disponible</a>
+            <a href="/logout"
+                onclick="return confirm('¿Está seguro de que desea cerrar la sesión?');">
+                    ↪ Cerrar sesión
+            </a>
+        </nav>
+
+        <div class="sidebar-info">
+            <strong>Administradora</strong>
+            <p>Consulta de horarios disponibles</p>
+        </div>
+    </aside>
+
+    <main class="content">
+
+        <header class="page-header">
+            <div>
+                <h1>Agenda disponible</h1>
+                <p>Filtrá por especialidad, médico y fecha para consultar disponibilidad.</p>
+            </div>
+
+            <div class="date-pill">🕒 Disponibilidad</div>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alerta">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="card">
+            <div class="card-title">
+                <div class="icon-box">🔎</div>
+                <div>
+                    <h2>Filtrar disponibilidad</h2>
+                    <p class="table-description">
+                        Primero elegí una especialidad, luego un médico y finalmente una fecha.
+                    </p>
+                </div>
+            </div>
+
+            <form method="GET" action="/admin/agenda_disponible">
+
+                <div class="form-grid">
+
+                    <div>
+                        <label>Especialidad</label>
+                        <select name="especialidad" onchange="this.form.submit()">
+                            <option value="">Todas las especialidades</option>
+
+                            {% for item in especialidades %}
+                                <option value="{{ item.especialidad }}"
+                                    {% if filtro_especialidad == item.especialidad %}selected{% endif %}>
+                                    {{ item.especialidad }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Médico</label>
+                        <select name="id_medico" onchange="this.form.submit()">
+                            <option value="">Todos los médicos</option>
+
+                            {% for medico in medicos %}
+                                <option value="{{ medico.id_medico }}"
+                                    {% if filtro_medico == medico.id_medico|string %}selected{% endif %}>
+                                    Dr/a {{ medico.apellido }}, {{ medico.nombre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="form-grid">
+
+                    <div>
+                        <label>Fecha</label>
+                        <select name="fecha" onchange="this.form.submit()">
+                            <option value="">Todas las fechas disponibles</option>
+
+                            {% for item in fechas_disponibles %}
+                                <option value="{{ item.fecha }}"
+                                    {% if filtro_fecha == item.fecha %}selected{% endif %}>
+                                    {{ item.fecha }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div style="display: flex; align-items: end;">
+                        <a href="/admin/agenda_disponible" class="btn-link">
+                            Limpiar filtros
+                        </a>
+                    </div>
+
+                </div>
+
+            </form>
+        </section>
+
+        <section class="card table-card">
+            <div class="card-title">
+                <div class="icon-box">📅</div>
+                <div>
+                    <h2>Turnos disponibles</h2>
+                    <p class="table-description">
+                        Horarios disponibles según los filtros seleccionados.
+                    </p>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Médico</th>
+                        <th>Especialidad</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if horarios %}
+                        {% for horario in horarios %}
+                            <tr>
+                                <td>{{ horario.fecha }}</td>
+                                <td>{{ horario.hora }}</td>
+                                <td>Dr/a {{ horario.medico_apellido }}, {{ horario.medico_nombre }}</td>
+                                <td>{{ horario.especialidad }}</td>
+                                <td><span class="estado">Disponible</span></td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <div class="empty-icon">🕒</div>
+                                    <strong>No hay horarios disponibles.</strong>
+                                    <p>Probá con otro médico, especialidad o generá nuevos horarios desde el panel.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+
+        <footer class="footer">
+            TurnoMed © 2026 - Sistema de Gestión de Turnos Médicos Grupo 8
+        </footer>
+
+    </main>
+
+</div>
+
+</body>
+</html>

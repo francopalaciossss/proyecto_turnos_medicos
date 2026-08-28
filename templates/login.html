@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - TurnoMed</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/estilos_registros.css') }}">
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <div class="login-logo">
+            <img src="{{ url_for('static', filename='imagenes/logo.png') }}" alt="Logo TurnoMed">
+        </div>
+
+        <div class="login-card">
+            <h2>Iniciar sesión</h2>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alerta">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="login-methods">
+                <form method="POST" action="/login">
+
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input type="email" name="email" required placeholder="Ingrese su email">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Contraseña</label>
+                        <input type="password" name="password" required placeholder="Ingrese su contraseña">
+                    </div>
+
+                    <button type="submit">
+                        Iniciar sesión
+                    </button>
+
+                </form>
+            </div>
+
+            <br>
+
+            <p>
+                ¿No tenés cuenta?
+                <a href="{{ url_for('registro') }}">Registrate</a>
+            </p>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

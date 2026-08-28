@@ -1,0 +1,138 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #eaf2ff, #f8fbff);
+    font-family: "Segoe UI", Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    color: #0f172a;
+}
+
+.main-container,
+.login-container {
+    width: 100%;
+    max-width: 520px;
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 44px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+    text-align: center;
+}
+
+.login-logo img {
+    width: 240px;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 24px;
+}
+
+.login-card h2 {
+    font-size: 30px;
+    margin-bottom: 16px;
+}
+
+.login-card p,
+.login-container a {
+    color: #475569;
+    font-size: 15px;
+}
+
+.login-container a {
+    color: #2563eb;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.login-methods form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.input-group {
+    text-align: left;
+    position: relative;
+}
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 7px;
+}
+
+.input-group i {
+    display: none;
+}
+
+input {
+    width: 100%;
+    height: 52px;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 0 14px;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.13);
+}
+
+button {
+    width: 100%;
+    height: 54px;
+    border: none;
+    border-radius: 14px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+.alerta {
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 14px 16px;
+    border-radius: 14px;
+    margin: 16px 0;
+    font-weight: 700;
+    text-align: center;
+}
+
+@media (max-width: 650px) {
+    .main-container,
+    .login-container {
+        padding: 28px;
+    }
+
+    .input-row {
+        grid-template-columns: 1fr;
+    }
+
+    .login-logo img {
+        width: 190px;
+    }
+}

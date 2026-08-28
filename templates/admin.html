@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Administradora - TurnoMed</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="sidebar-logo-box">
+            <img src="{{ url_for('static', filename='imagenes/logo.png') }}" alt="TurnoMed">
+        </div>
+
+        <h2>TurnoMed</h2>
+
+        <nav class="menu">
+            <a href="/admin" class="active">🏠 Panel</a>
+            <a href="/admin/medicos">👨‍⚕️ Administrar médicos</a>
+            <a href="/admin/pacientes">👤 Administrar pacientes</a>
+            <a href="#horarios">📅 Horarios</a>
+            <a href="/admin/agenda_disponible">🕒 Agenda disponible</a>
+            <a href="#asignar-turno">👤 Asignar turno</a>
+            <a href="#agenda">📋 Turnos asignados</a>
+            <a href="/logout"
+                onclick="return confirm('¿Está seguro de que desea cerrar la sesión?');">
+                ↪ Cerrar sesión
+            </a>
+        </nav>
+
+        <div class="sidebar-info">
+            <strong>Administradora</strong>
+            <p>Panel de gestión de turnos médicos</p>
+        </div>
+    </aside>
+
+    <main class="content">
+
+        <header class="page-header">
+            <div>
+                <h1>Panel de administración</h1>
+                <p>Gestión centralizada de médicos, pacientes, horarios y turnos.</p>
+            </div>
+
+            <div class="date-pill">📅 Sistema TurnoMed</div>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alerta">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="grid">
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="icon-box">👨‍⚕️</div>
+                    <div>
+                        <h2>Administrar médicos</h2>
+                        <p class="table-description">Agregar, editar, cambiar foto, activar o desactivar médicos.</p>
+                    </div>
+                </div>
+                <a href="/admin/medicos" class="btn-link">Ir a administrar médicos</a>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="icon-box">👤</div>
+                    <div>
+                        <h2>Administrar pacientes</h2>
+                        <p class="table-description">Agregar, editar, activar o desactivar pacientes.</p>
+                    </div>
+                </div>
+                <a href="/admin/pacientes" class="btn-link">Ir a administrar pacientes</a>
+            </div>
+
+        </section>
+
+        <section class="grid" id="horarios">
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="icon-box">📅</div>
+                    <h2>Cargar horario individual</h2>
+                </div>
+
+                <form method="POST" action="/cargar_horario">
+                    <select name="id_medico" required>
+                        <option value="">Seleccionar médico</option>
+                        {% for medico in medicos %}
+                            <option value="{{ medico.id_medico }}">
+                                Dr/a {{ medico.apellido }}, {{ medico.nombre }} | {{ medico.especialidad }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <input type="date" name="fecha" required>
+                    <input type="time" name="hora" required>
+
+                    <button type="submit">+ Cargar horario</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="icon-box">⏱️</div>
+                    <div>
+                        <h2>Generar horarios por franja</h2>
+                        <p class="table-description">Ejemplo: de 08:00 a 09:00 cada 10 minutos.</p>
+                    </div>
+                </div>
+
+                <form method="POST" action="/generar_horarios">
+                    <select name="id_medico" required>
+                        <option value="">Seleccionar médico</option>
+                        {% for medico in medicos %}
+                            <option value="{{ medico.id_medico }}">
+                                Dr/a {{ medico.apellido }}, {{ medico.nombre }} | {{ medico.especialidad }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="form-grid">
+                        <input type="date" name="fecha" required>
+                        <input type="number" name="frecuencia" min="1" placeholder="Frecuencia en minutos. Ej: 10" required>
+                    </div>
+
+                    <div class="form-grid">
+                        <input type="time" name="hora_inicio" required>
+                        <input type="time" name="hora_fin" required>
+                    </div>
+
+                    <button type="submit">Generar horarios disponibles</button>
+                </form>
+            </div>
+
+        </section>
+
+        <section class="card" id="asignar-turno">
+            <div class="card-title">
+                <div class="icon-box">👤</div>
+                <div>
+                    <h2>Asignar turno</h2>
+                    <p class="table-description">Buscá al paciente y seleccioná un horario disponible.</p>
+                </div>
+            </div>
+
+            <form method="GET" action="/admin#asignar-turno">
+
+                <div class="form-grid">
+                    <input
+                        type="text"
+                        name="buscar_paciente"
+                        placeholder="Buscar paciente por nombre, apellido, DNI, email o teléfono"
+                        value="{{ busqueda_paciente }}"
+                    >
+
+                    <select name="especialidad" onchange="this.form.submit()"> 
+                        <option value="">Todas las especialidades</option>
+                        {% for item in especialidades %}
+                            <option value="{{ item.especialidad }}"
+                                {% if filtro_especialidad == item.especialidad %}selected{% endif %}>
+                                {{ item.especialidad }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-grid">
+                    <select name="id_medico" onchange="this.form.submit()">
+                        <option value="">Todos los médicos</option>
+                        {% for medico in medicos %}
+                            <option value="{{ medico.id_medico }}"
+                                {% if filtro_medico == medico.id_medico|string %}selected{% endif %}>
+                                Dr/a {{ medico.apellido }}, {{ medico.nombre }} | {{ medico.especialidad }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <select name="fecha" onchange="this.form.submit()">
+                        <option value="">Todas las fechas disponibles</option>
+                        {% for item in fechas_disponibles %}
+                            <option value="{{ item.fecha }}"
+                                {% if filtro_fecha == item.fecha %}selected{% endif %}>
+                                {{ item.fecha }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-grid">
+                    <button type="submit">Buscar paciente y filtrar turnos</button>
+                    <a href="/admin#asignar-turno" class="btn-link">Limpiar búsqueda</a>
+                </div>
+
+</form>
+
+            <form method="POST" action="/asignar_turno">
+                <select name="id_paciente" required>
+                    <option value="">Seleccionar paciente</option>
+                    {% for paciente in pacientes %}
+                        <option value="{{ paciente.id_usuario }}">
+                            {{ paciente.apellido }}, {{ paciente.nombre }} | DNI: {{ paciente.dni }} | {{ paciente.email }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <select name="id_horario" required>
+                    <option value="">Seleccionar horario disponible</option>
+                    {% for horario in horarios %}
+                        <option value="{{ horario.id_horario }}">
+                            {{ horario.fecha }} - {{ horario.hora }}
+                            | Dr/a {{ horario.medico_apellido }}, {{ horario.medico_nombre }}
+                            | {{ horario.especialidad }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                {% if pacientes and horarios %}
+                    <button type="submit" class="btn-secondary">✓ Asignar turno</button>
+                {% else %}
+                    <button type="button" class="btn-danger" disabled>No hay pacientes u horarios disponibles</button>
+                {% endif %}
+            </form>
+        </section>
+
+        <section class="card table-card" id="agenda">
+            <div class="card-title">
+                <div class="icon-box">📋</div>
+                <div>
+                    <h2>Agenda general</h2>
+                    <p class="table-description">Listado de todos los turnos asignados.</p>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th>Especialidad</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if turnos %}
+                        {% for turno in turnos %}
+                            <tr>
+                                <td>{{ turno.paciente }}</td>
+                                <td>Dr/a {{ turno.medico_apellido }}, {{ turno.medico_nombre }}</td>
+                                <td>{{ turno.especialidad }}</td>
+                                <td>{{ turno.fecha }}</td>
+                                <td>{{ turno.hora }}</td>
+                                <td>
+                                    {% if turno.estado == "Cancelado" %}
+                                        <span class="estado-cancelado">Cancelado</span>
+                                    {% else %}
+                                        <span class="estado">Confirmado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if turno.estado != "Cancelado" %}
+                                        <form method="POST"
+                                              action="/cancelar_turno/{{ turno.id }}"
+                                              onsubmit="return confirm('¿Está seguro que desea cancelar este turno?');">
+                                            <button type="submit" class="btn-danger">Cancelar</button>
+                                        </form>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📅</div>
+                                    <strong>No hay turnos asignados.</strong>
+                                    <p>Aún no se han asignado turnos.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+
+        <footer class="footer">
+            TurnoMed © 2026 - Sistema de Gestión de Turnos Médicos Grupo 8
+        </footer>
+
+    </main>
+
+</div>
+
+</body>
+</html>

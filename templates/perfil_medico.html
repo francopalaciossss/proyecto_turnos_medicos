@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi perfil - Médico</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="sidebar-logo-box">
+            <img src="{{ url_for('static', filename='imagenes/logo.png') }}" alt="TurnoMed">
+        </div>
+
+        <h2>TurnoMed</h2>
+
+        <nav class="menu">
+            <a href="/medico">📅 Agenda médica</a>
+            <a href="/medico/perfil" class="active">⚙ Mi perfil</a>
+            <a href="/logout"
+                onclick="return confirm('¿Está seguro de que desea cerrar la sesión?');">
+                ↪ Cerrar sesión
+            </a>
+        </nav>
+
+        <div class="sidebar-info">
+            <strong>Médico</strong>
+            <p>Editar datos profesionales</p>
+        </div>
+    </aside>
+
+    <main class="content">
+
+        <header class="page-header medico-header">
+            <div>
+                <h1>Mi perfil médico</h1>
+                <p>
+                    Dr/a {{ medico.nombre }} {{ medico.apellido }} —
+                    <strong>{{ medico.especialidad }}</strong>
+                </p>
+            </div>
+
+            <div class="medico-profile">
+                <img
+                    src="{% if medico.foto %}
+                            {{ url_for('static', filename='imagenes/medicos/' + medico.foto) }}
+                         {% else %}
+                            {{ url_for('static', filename='imagenes/logo.png') }}
+                         {% endif %}"
+                    alt="Foto médico"
+                    class="medico-avatar"
+                >
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alerta">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="grid">
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="icon-box">🩺</div>
+                    <div>
+                        <h2>Datos profesionales</h2>
+                        <p class="table-description">
+                            Actualizá tus datos personales de acceso.
+                        </p>
+                    </div>
+                </div>
+
+                <form method="POST" action="/medico/perfil" enctype="multipart/form-data">
+
+                    <div class="form-grid">
+                        <input type="text" name="nombre" value="{{ medico.nombre }}" placeholder="Nombre" required>
+                        <input type="text" name="apellido" value="{{ medico.apellido }}" placeholder="Apellido" required>
+                    </div>
+
+                    <input type="text" value="{{ medico.especialidad }}" placeholder="Especialidad" disabled>
+
+                    <div class="form-grid">
+                        <input type="text" name="telefono" value="{{ medico.telefono }}" placeholder="Teléfono">
+                        <input type="email" name="email" value="{{ medico.email }}" placeholder="Correo electrónico" required>
+                    </div>
+
+                    <label>Cambiar foto de perfil</label>
+                    <input type="file" name="foto" accept="image/*">
+
+                    <hr>
+
+                    <h3>Cambiar contraseña</h3>
+
+                    <input type="password" name="password_actual" placeholder="Contraseña actual">
+                    <input type="password" name="nueva_password" placeholder="Nueva contraseña">
+                    <input type="password" name="confirmar_password" placeholder="Confirmar nueva contraseña">
+
+                    <button type="submit">
+                        Guardar cambios
+                    </button>
+
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="icon-box">👤</div>
+                    <div>
+                        <h2>Foto actual</h2>
+                        <p class="table-description">
+                            Imagen visible en tu agenda médica.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="medico-profile" style="margin: 20px 0;">
+                    <img
+                        src="{% if medico.foto %}
+                                {{ url_for('static', filename='imagenes/medicos/' + medico.foto) }}
+                             {% else %}
+                                {{ url_for('static', filename='imagenes/logo.png') }}
+                             {% endif %}"
+                        alt="Foto médico"
+                        class="medico-avatar"
+                    >
+                </div>
+
+                <p class="table-description">
+                    Para cambiar la imagen, seleccioná un archivo desde el formulario y guardá los cambios.
+                </p>
+            </div>
+
+        </section>
+
+        <footer class="footer">
+            TurnoMed © 2026 - Sistema de Gestión de Turnos Médicos Grupo 8
+        </footer>
+
+    </main>
+
+</div>
+
+</body>
+</html>

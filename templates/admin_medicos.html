@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Administrar médicos - TurnoMed</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="sidebar-logo-box">
+            <img src="{{ url_for('static', filename='imagenes/logo.png') }}" alt="TurnoMed">
+        </div>
+
+        <h2>TurnoMed</h2>
+
+        <nav class="menu">
+            <a href="/admin">🏠 Panel</a>
+            <a href="/admin/medicos" class="active">👨‍⚕️ Administrar médicos</a>
+            <a href="/admin/pacientes">👤 Administrar pacientes</a>
+            <a href="/admin/agenda_disponible">🕒 Agenda disponible</a>
+            <a href="/logout"
+                onclick="return confirm('¿Está seguro de que desea cerrar la sesión?');">
+                ↪ Cerrar sesión
+            </a>
+        </nav>
+
+        <div class="sidebar-info">
+            <strong>Administradora</strong>
+            <p>Gestión de médicos del consultorio</p>
+        </div>
+    </aside>
+
+    <main class="content">
+
+        <header class="page-header">
+            <div>
+                <h1>Administrar médicos</h1>
+                <p>Agregar, editar, cambiar foto, desactivar o volver a activar médicos.</p>
+            </div>
+
+            <div class="date-pill">👨‍⚕️ Médicos</div>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alerta">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="card" id="agregar-medico">
+            <div class="card-title">
+                <div class="icon-box">➕</div>
+                <h2>Agregar médico</h2>
+            </div>
+
+            <form method="POST" action="/admin/agregar_medico" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <input type="text" name="nombre" placeholder="Nombre" required>
+                    <input type="text" name="apellido" placeholder="Apellido" required>
+                </div>
+
+                <div class="form-grid">
+                    <input type="text" name="especialidad" placeholder="Especialidad" required>
+                    <input type="text" name="telefono" placeholder="Teléfono">
+                </div>
+
+                <div class="form-grid">
+                    <input type="email" name="email" placeholder="Correo electrónico" required>
+                    <input type="password" name="password" placeholder="Contraseña inicial" required>
+                </div>
+
+                <label>Foto del médico</label>
+                <input type="file" name="foto" accept="image/*">
+
+                <button type="submit">+ Agregar médico</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <div class="card-title">
+                <div class="icon-box">🔎</div>
+                <div>
+                    <h2>Buscar médicos</h2>
+                    <p class="table-description">Filtrar por nombre, apellido, email, especialidad o estado.</p>
+                </div>
+            </div>
+
+            <form method="GET" action="/admin/medicos">
+                <div class="form-grid">
+                    <input
+                        type="text"
+                        name="busqueda"
+                        placeholder="Buscar por nombre, apellido o email"
+                        value="{{ busqueda }}"
+                    >
+
+                    <select name="especialidad">
+                        <option value="">Todas las especialidades</option>
+                        {% for item in especialidades %}
+                            <option value="{{ item.especialidad }}"
+                                {% if filtro_especialidad == item.especialidad %}selected{% endif %}>
+                                {{ item.especialidad }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-grid">
+                    <select name="estado">
+                        <option value="activos" {% if filtro_estado == "activos" %}selected{% endif %}>Médicos activos</option>
+                        <option value="inactivos" {% if filtro_estado == "inactivos" %}selected{% endif %}>Médicos inactivos</option>
+                        <option value="todos" {% if filtro_estado == "todos" %}selected{% endif %}>Todos los médicos</option>
+                    </select>
+
+                    <button type="submit">Buscar</button>
+                </div>
+
+                <a href="/admin/medicos" class="btn-link">Limpiar filtros</a>
+            </form>
+        </section>
+
+        <section class="card table-card">
+            <div class="card-title">
+                <div class="icon-box">📋</div>
+                <div>
+                    <h2>Listado de médicos</h2>
+                    <p class="table-description">Editar datos, actualizar foto, desactivar o volver a activar médicos.</p>
+                </div>
+            </div>
+
+            {% if medicos %}
+                {% for medico in medicos %}
+                    <div class="card" style="margin-bottom: 22px;">
+                        <div class="card-title">
+                            <div class="medico-profile">
+                                <img
+                                    src="{% if medico.foto %}
+                                            {{ url_for('static', filename='imagenes/medicos/' + medico.foto) }}
+                                         {% else %}
+                                            {{ url_for('static', filename='imagenes/medicos/medico_default.png') }}
+                                         {% endif %}"
+                                    alt="Foto médico"
+                                    class="medico-avatar"
+                                >
+                            </div>
+
+                            <div>
+                                <h2>Dr/a {{ medico.apellido }}, {{ medico.nombre }}</h2>
+                                <p class="table-description">{{ medico.especialidad }}</p>
+
+                                {% if medico.activo == 1 %}
+                                    <span class="estado">Activo</span>
+                                {% else %}
+                                    <span class="estado-cancelado">Inactivo</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <form method="POST"
+                              action="/admin/medicos/editar/{{ medico.id_medico }}"
+                              enctype="multipart/form-data">
+
+                            <div class="form-grid">
+                                <input type="text" name="nombre" value="{{ medico.nombre }}" placeholder="Nombre" required>
+                                <input type="text" name="apellido" value="{{ medico.apellido }}" placeholder="Apellido" required>
+                            </div>
+
+                            <div class="form-grid">
+                                <input type="text" name="especialidad" value="{{ medico.especialidad }}" placeholder="Especialidad" required>
+                                <input type="text" name="telefono" value="{{ medico.telefono }}" placeholder="Teléfono">
+                            </div>
+
+                            <input type="email" name="email" value="{{ medico.email }}" placeholder="Correo electrónico" required>
+
+                            <label>Cambiar foto del médico</label>
+                            <input type="file" name="foto" accept="image/*">
+
+                            <button type="submit" class="btn-secondary">Guardar cambios</button>
+                        </form>
+
+                        <br>
+
+                        {% if medico.activo == 1 %}
+                            <form method="POST"
+                                  action="/admin/desactivar_medico/{{ medico.id_medico }}"
+                                  onsubmit="return confirm('¿Está seguro que desea desactivar este médico?');">
+                                <button type="submit" class="btn-danger">Desactivar médico</button>
+                            </form>
+                        {% else %}
+                            <form method="POST"
+                                  action="/admin/activar_medico/{{ medico.id_medico }}"
+                                  onsubmit="return confirm('¿Desea volver a activar este médico?');">
+                                <button type="submit" class="btn-success">Activar médico</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">👨‍⚕️</div>
+                    <strong>No se encontraron médicos.</strong>
+                    <p>Probá limpiar los filtros o agregá un nuevo médico.</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <footer class="footer">
+            TurnoMed © 2026 - Sistema de Gestión de Turnos Médicos Grupo 8
+        </footer>
+
+    </main>
+
+</div>
+
+</body>
+</html>

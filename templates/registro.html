@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro - TurnoMed</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/estilos_registros.css') }}">
+</head>
+
+<body>
+
+    <div class="login-container">
+
+        <div class="login-logo">
+            <img src="{{ url_for('static', filename='imagenes/logo.png') }}" alt="Logo TurnoMed">
+        </div>
+
+        <div class="login-card">
+            <h2>Crear cuenta</h2>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alerta">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="login-methods">
+
+            <form method="POST" action="{{ url_for('registro') }}">
+
+                <div class="input-row">
+
+                    <div class="input-group">
+                        <label>Nombre</label>
+                        <input type="text" name="nombre" required placeholder="Ingrese su nombre">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Apellido</label>
+                        <input type="text" name="apellido" required placeholder="Ingrese su apellido">
+                    </div>
+
+                </div>
+
+                <div class="input-row">
+
+                    <div class="input-group">
+                        <label>DNI</label>
+                        <input type="text" name="dni" required placeholder="Ingrese su documento">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Teléfono</label>
+                        <input type="text" name="telefono" required placeholder="Ingrese su teléfono">
+                    </div>
+
+                </div>
+
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required placeholder="Ingrese su email">
+                </div>
+
+                <div class="input-group">
+                    <label>Fecha de nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <input type="password" name="password" required placeholder="Ingrese su contraseña">
+                </div>
+
+                <button type="submit">
+                    Crear cuenta
+                </button>
+
+            </form>
+
+        </div>
+
+        <br>
+
+        <a href="{{ url_for('login') }}">
+            Volver al login
+        </a>
+
+    </div>
+
+</body>
+</html>

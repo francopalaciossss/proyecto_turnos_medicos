@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Administrar pacientes - TurnoMed</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="sidebar-logo-box">
+            <img src="{{ url_for('static', filename='imagenes/logo.png') }}" alt="TurnoMed">
+        </div>
+
+        <h2>TurnoMed</h2>
+
+        <nav class="menu">
+            <a href="/admin">🏠 Panel</a>
+            <a href="/admin/medicos">👨‍⚕️ Administrar médicos</a>
+            <a href="/admin/pacientes" class="active">👤 Administrar pacientes</a>
+            <a href="/admin/agenda_disponible">🕒 Agenda disponible</a>
+            <a href="/logout"
+                onclick="return confirm('¿Está seguro de que desea cerrar la sesión?');">
+                    ↪ Cerrar sesión
+            </a>
+        </nav>
+
+        <div class="sidebar-info">
+            <strong>Administradora</strong>
+            <p>Gestión de pacientes del consultorio</p>
+        </div>
+    </aside>
+
+    <main class="content">
+
+        <header class="page-header">
+            <div>
+                <h1>Administrar pacientes</h1>
+                <p>Agregar, editar, activar o desactivar pacientes registrados.</p>
+            </div>
+
+            <div class="date-pill">👤 Pacientes</div>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alerta">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="card">
+            <div class="card-title">
+                <div class="icon-box">➕</div>
+                <div>
+                    <h2>Agregar paciente</h2>
+                    <p class="table-description">
+                        Cargá los datos del paciente y una contraseña inicial para que pueda ingresar.
+                    </p>
+                </div>
+            </div>
+
+            <form method="POST" action="/admin/agregar_paciente">
+
+                <div class="form-grid">
+                    <input type="text" name="nombre" placeholder="Nombre" required>
+                    <input type="text" name="apellido" placeholder="Apellido" required>
+                </div>
+
+                <div class="form-grid">
+                    <input type="text" name="dni" placeholder="DNI" required>
+                    <input type="text" name="telefono" placeholder="Teléfono">
+                </div>
+
+                <div class="form-grid">
+                    <input type="email" name="email" placeholder="Correo electrónico" required>
+                    <input type="date" name="fecha_nacimiento" required>
+                </div>
+
+                <input type="password" name="password" placeholder="Contraseña inicial" required>
+
+                <button type="submit">
+                    + Agregar paciente
+                </button>
+
+            </form>
+        </section>
+
+        <section class="card">
+            <div class="card-title">
+                <div class="icon-box">🔎</div>
+                <div>
+                    <h2>Buscar pacientes</h2>
+                    <p class="table-description">
+                        Filtrar por nombre, apellido, DNI, email, teléfono o estado.
+                    </p>
+                </div>
+            </div>
+
+            <form method="GET" action="/admin/pacientes">
+
+                <div class="form-grid">
+                    <input
+                        type="text"
+                        name="busqueda"
+                        placeholder="Nombre, apellido, DNI, email o teléfono"
+                        value="{{ busqueda }}"
+                    >
+
+                    <select name="estado">
+                        <option value="activos" {% if filtro_estado == "activos" %}selected{% endif %}>
+                            Pacientes activos
+                        </option>
+
+                        <option value="inactivos" {% if filtro_estado == "inactivos" %}selected{% endif %}>
+                            Pacientes inactivos
+                        </option>
+
+                        <option value="todos" {% if filtro_estado == "todos" %}selected{% endif %}>
+                            Todos los pacientes
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-grid">
+                    <button type="submit">Buscar pacientes</button>
+                    <a href="/admin/pacientes" class="btn-link">Limpiar filtros</a>
+                </div>
+
+            </form>
+        </section>
+
+        <section class="card table-card">
+            <div class="card-title">
+                <div class="icon-box">📋</div>
+                <div>
+                    <h2>Listado de pacientes</h2>
+                    <p class="table-description">
+                        Editá datos personales, fecha de nacimiento o estado del paciente.
+                    </p>
+                </div>
+            </div>
+
+            {% if pacientes %}
+
+                {% for paciente in pacientes %}
+
+                    <div class="card" style="margin-bottom: 22px;">
+
+                        <div class="card-title">
+                            <div class="icon-box">👤</div>
+
+                            <div>
+                                <h2>{{ paciente.apellido }}, {{ paciente.nombre }}</h2>
+
+                                <p class="table-description">
+                                    DNI: {{ paciente.dni }}
+                                    |
+                                    Edad: {{ calcular_edad(paciente.fecha_nacimiento) }}
+                                </p>
+
+                                {% if paciente.activo == 1 %}
+                                    <span class="estado">Activo</span>
+                                {% else %}
+                                    <span class="estado-cancelado">Inactivo</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <form method="POST" action="/admin/pacientes/editar/{{ paciente.id_usuario }}">
+
+                            <div class="form-grid">
+                                <input type="text" name="nombre" value="{{ paciente.nombre }}" placeholder="Nombre" required>
+                                <input type="text" name="apellido" value="{{ paciente.apellido }}" placeholder="Apellido" required>
+                            </div>
+
+                            <div class="form-grid">
+                                <input type="text" name="dni" value="{{ paciente.dni }}" placeholder="DNI" required>
+                                <input type="text" name="telefono" value="{{ paciente.telefono }}" placeholder="Teléfono">
+                            </div>
+
+                            <div class="form-grid">
+                                <input type="email" name="email" value="{{ paciente.email }}" placeholder="Correo electrónico" required>
+                                <input type="date" name="fecha_nacimiento" value="{{ paciente.fecha_nacimiento }}">
+                            </div>
+
+                            <button type="submit" class="btn-secondary">
+                                Guardar cambios
+                            </button>
+
+                        </form>
+
+                        <br>
+
+                        {% if paciente.activo == 1 %}
+                            <form
+                                method="POST"
+                                action="/admin/pacientes/desactivar/{{ paciente.id_usuario }}"
+                                onsubmit="return confirm('¿Desea desactivar este paciente?');">
+
+                                <button type="submit" class="btn-danger">
+                                    Desactivar paciente
+                                </button>
+
+                            </form>
+                        {% else %}
+                            <form
+                                method="POST"
+                                action="/admin/pacientes/activar/{{ paciente.id_usuario }}"
+                                onsubmit="return confirm('¿Desea activar nuevamente este paciente?');">
+
+                                <button type="submit" class="btn-success">
+                                    Activar paciente
+                                </button>
+
+                            </form>
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-state">
+                    <div class="empty-icon">👤</div>
+                    <strong>No se encontraron pacientes.</strong>
+                    <p>Probá limpiar los filtros o agregá un nuevo paciente.</p>
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <footer class="footer">
+            TurnoMed © 2026 - Sistema de Gestión de Turnos Médicos Grupo 8
+        </footer>
+
+    </main>
+
+</div>
+
+</body>
+</html>
