@@ -57,10 +57,9 @@ Consultar turno / Solicitar turno
  2.  Mas facilidad para crear y pedir tunos.
  3. Tener mas orden de los pacientes y sus turnos.
  4. Los pacientes tienen mas informacion de sus medicos a mano.
-## Integrantes
-
-- Laura Gimenez 
-- Sofia Gomez
-- Franco Nicolas Placios
-- Alejandro Yanez Vazquez
-- Milena Avila
+## Autor
+ Franco Nicolas Palacios
+ 
+ ## Contacto
+ Mail: francopalacios221@gmail.com
+ Celular: +54 11 6498-3818
