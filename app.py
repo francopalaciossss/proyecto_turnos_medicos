@@ -5,6 +5,16 @@ from werkzeug.utils import secure_filename
 import sqlite3
 import os
 from datetime import datetime, timedelta
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+aws_key = os.getenv("AWS_ACCESS_KEY_ID")
+aws_secret = os.getenv("AWS_SECRET_ACCESS_KEY")
+
+
 #configuración de la app
 app = Flask(__name__)
 app.secret_key = "clave-secreta-turnomed"
