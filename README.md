@@ -76,7 +76,7 @@ Consultar turno / Solicitar turno
 ![Turnos](screenshots/pantalla_admin.png)
 
 ### Panel Horarios desde Administrador
-![Turnos](screenshots/pantalla_admin_asignar_turno.png)
+![Turnos](screenshots/pantalla_admin_asignar_turnos.png)
 
 ## Autor
  Franco Nicolas Palacios
